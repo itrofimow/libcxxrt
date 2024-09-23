@@ -255,12 +255,20 @@ namespace std
  * various checks may test for equality of the class, which is incorrect.
  */
 static const uint64_t exception_class =
+
+
+
 	EXCEPTION_CLASS('G', 'N', 'U', 'C', 'C', '+', '+', '\0');
+
 /**
  * Class used for dependent exceptions.  
  */
 static const uint64_t dependent_exception_class =
+
+
+
 	EXCEPTION_CLASS('G', 'N', 'U', 'C', 'C', '+', '+', '\x01');
+
 /**
  * The low four bytes of the exception class, indicating that we conform to the
  * Itanium C++ ABI.  This is currently unused, but should be used in the future
@@ -300,6 +308,65 @@ namespace std
 }
 
 using namespace ABI_NAMESPACE;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -346,6 +413,44 @@ static void free_exception_list(__cxa_exception *ex)
 	__cxa_free_exception(ex+1);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Cleanup function called when a thread exists to make certain that all of the
  * per-thread data is deleted.
@@ -369,7 +474,6 @@ static void thread_cleanup(void* thread_info)
 	}
 	free(thread_info);
 }
-
 
 /**
  * Once control used to protect the key creation.
@@ -401,8 +505,11 @@ static void init_key(void)
 	pthread_key_create(&eh_key, thread_cleanup);
 	pthread_setspecific(eh_key, reinterpret_cast<void *>(0x42));
 	fakeTLS = (pthread_getspecific(eh_key) != reinterpret_cast<void *>(0x42));
+
 	pthread_setspecific(eh_key, 0);
 }
+
+
 
 /**
  * Returns the thread info structure, creating it if it is not already created.
@@ -420,8 +527,17 @@ static __cxa_thread_info *thread_info()
 		info = static_cast<__cxa_thread_info*>(calloc(1, sizeof(__cxa_thread_info)));
 		pthread_setspecific(eh_key, info);
 	}
+
 	return info;
 }
+
+
+
+
+
+
+
+
 /**
  * Fast version of thread_info().  May fail if thread_info() is not called on
  * this thread at least once already.
@@ -429,6 +545,8 @@ static __cxa_thread_info *thread_info()
 static __cxa_thread_info *thread_info_fast()
 {
 	if (fakeTLS) { return &singleThreadInfo; }
+
+
 	return static_cast<__cxa_thread_info*>(pthread_getspecific(eh_key));
 }
 /**
@@ -605,6 +723,27 @@ static void free_exception(char *e)
 }
 #endif
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Allocates an exception structure.  Returns a pointer to the space that can
  * be used to store an object of thrown_size bytes.  This function will use an
@@ -615,6 +754,9 @@ extern "C" void *__cxa_allocate_exception(size_t thrown_size) _LIBCXXRT_NOEXCEPT
 {
 	size_t size = thrown_size + sizeof(__cxa_exception);
 	char *buffer = alloc_or_die(size);
+
+
+
 	return buffer+sizeof(__cxa_exception);
 }
 
@@ -651,6 +793,7 @@ extern "C" void __cxa_free_exception(void *thrown_exception) _LIBCXXRT_NOEXCEPT
 	}
 
 	free_exception(reinterpret_cast<char*>(ex));
+
 }
 
 static void releaseException(__cxa_exception *exception)
@@ -807,6 +950,9 @@ extern "C" __cxa_exception *__cxa_init_primary_exception(
 }
 
 
+
+
+
 /**
  * ABI function for throwing an exception.  Takes the object to be thrown (the
  * pointer returned by __cxa_allocate_exception()), the type info for the
@@ -816,6 +962,11 @@ extern "C" void __cxa_throw(void *thrown_exception,
                             std::type_info *tinfo,
                             void(*dest)(void*))
 {
+
+
+
+
+
 	__cxa_exception *ex = __cxa_init_primary_exception(thrown_exception, tinfo, dest);
 	ex->referenceCount = 1;
 
@@ -863,6 +1014,32 @@ extern "C" void __cxa_decrement_exception_refcount(void* thrown_exception)
 	__cxa_exception *ex = static_cast<__cxa_exception*>(thrown_exception) - 1;
 	releaseException(ex);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * ABI function.  Rethrows the current exception.  Does not remove the
