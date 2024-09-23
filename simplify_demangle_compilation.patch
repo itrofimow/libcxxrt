@@ -1,0 +1,24 @@
+diff --git a/src/typeinfo.cc b/src/typeinfo.cc
+index 5c44ef1..9457e49 100644
+--- a/src/typeinfo.cc
++++ b/src/typeinfo.cc
+@@ -82,7 +82,7 @@ extern "C" char* __cxa_demangle(const char* mangled_name,
+ 	// however, and for our changes to be pushed upstream.  We also need to
+ 	// call a different demangling function here depending on the ABI (e.g.
+ 	// ARM).
+-	char *demangled = __cxa_demangle_gnu3(mangled_name);
++/*	char *demangled = __cxa_demangle_gnu3(mangled_name);
+ 	if (NULL != demangled)
+ 	{
+ 		size_t len = strlen(demangled);
+@@ -119,6 +119,9 @@ extern "C" char* __cxa_demangle(const char* mangled_name,
+ 			*status = -2;
+ 		}
+ 		return NULL;
++	}*/
++	if (status) {
++		*status = -2;
+ 	}
+-	return buf;
++	return NULL;
+ }
